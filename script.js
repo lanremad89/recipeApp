@@ -1,69 +1,73 @@
-let result = document.getElementById('result')
-let search = document.getElementById('search-btn')
-let url = "https://www.themealdb.com/api/json/v1/1/search.php?s="
+const getMealbtn = document.getElementById('getMeal')
+const mealContainer = document.getElementById('meal')
 
-
-search.addEventListener('click', () => {
-    let userInput = document.getElementById('user-input').value 
-    if(userInput.length == 0){
-        result.innerHTML = `<h3>Input Field cannot be empty</h3>`
-    } else {
-        axios.get(url + userInput)
-.then(response => {
-    const myMeal = response.data.meals[0]
-    console.log(myMeal)
-    console.log(myMeal.strMealThumb)
-    console.log(myMeal.strMeal)
-    console.log(myMeal.strArea)
-    console.log(myMeal.strInstructions)
-    let count = 1
-    let ingredients = []
-    for(let i in myMeal) {
-        let ingredient = ""
-        let measure = ""
-        if (i.startsWith("strIngredient") && myMeal[i]) {
-            
-            ingredient = myMeal[i]
-            measure = myMeal[`strMeasure` + count]
-            count++
-            ingredients.push(`${measure} ${ingredient}`)
-        }
-    }
-    console.log(ingredients)
-
-    result.innerHTML = `<img src=${myMeal.strMealThumb}>
-    <div class="details">
-        <h2>${myMeal.strMeal}</h2>
-        <h4>${myMeal.strArea}</h4>
-    </div
-    <div id="ingredient-con"></div>
-    <div id="recipe">
-        <button id="hide-recipe">X</button>
-        <pre id="instruction">${myMeal.strInstructions}</pre>
-    </div>
-    <button id="show-recipe">View Recipe</button>`
-    
-    let ingredientCon = document.getElementById('ingredient-con')
-    let parent = document.createElement('ul')
-    let recipe = document.getElementById('recipe')
-    let hideRecipe = document.getElementById('hide-recipe')
-    let showRecipe = document.getElementById('show-recipe')
-
-    ingredients.forEach((i) => {
-        let child = document.createElement("li")
-        child.innerText = i
-        parent.appendChild(child)
-        ingredientCon.appendChild(parent)
+getMealbtn.addEventListener('click', function() {
+    fetch('https://www.themealdb.com/api/json/v1/1/random.php')
+    .then(res => res.json())
+    .then(res => {
+        createMeal(res.meals[0]);
     })
-
-    hideRecipe.addEventListener('click', () =>{
-        recipe.style.display= "none"
-    })
-
-    showRecipe.addEventListener('click', () => {
-        recipe.style.display = "block"
-
-    })
+    .catch(e => {
+        console.warn(e);
+    });
 })
-    }
-})
+
+const createMeal = meal => {
+	const ingredients = [];
+
+	// Get all ingredients from the object. Up to 20
+	for (let i = 1; i <= 20; i++) {
+		if (meal[`strIngredient${i}`]) {
+			ingredients.push(
+				`${meal[`strIngredient${i}`]} - ${meal[`strMeasure${i}`]}`
+			);
+		} else {
+			// Stop if there are no more ingredients
+			break;
+		}
+	}
+
+	mealContainer.innerHTML = `
+		<div class="row">
+			<div class="columns five">
+				<img src="${meal.strMealThumb}" alt="Meal Image">
+				${
+					meal.strCategory
+						? `<p><strong>Category:</strong> ${meal.strCategory}</p>`
+						: ''
+				}
+				${meal.strArea ? `<p><strong>Area:</strong> ${meal.strArea}</p>` : ''}
+				${
+					meal.strTags
+						? `<p><strong>Tags:</strong> ${meal.strTags
+								.split(',')
+								.join(', ')}</p>`
+						: ''
+				}
+				<h5>Ingredients:</h5>
+				<ul>
+					${ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+				</ul>
+			</div>
+			<div class="columns seven">
+				<h4>${meal.strMeal}</h4>
+				<p>${meal.strInstructions}</p>
+			</div>
+		</div>
+		${
+			meal.strYoutube
+				? `
+		<div class="row">
+			<h5>Video Recipe</h5>
+			<div class="videoWrapper">
+				<iframe width="420" height="315"
+				src="https://www.youtube.com/embed/${meal.strYoutube.slice(-11)}">
+				</iframe>
+			</div>
+		</div>`
+				: ''
+		}
+	`;
+
+	
+};
