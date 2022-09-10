@@ -4,18 +4,26 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe App</title>
+    <title>Lanre's Random Meal Generator</title>
 </head>
 <body>
-    <h1>Lanre's Recipe App</h1>
-        <div class="container">
-            <div class="search-container">
-                <input type="text" placeholder="Type in a dish....." id="user-input">
-                <button id="search-btn">Search</button>
-            </div>
-            <div id="result"></div>
+    <div class="container">
+        <div class="row text-center">
+            <h3>
+                Are You Hungry?
+            </h3>
+
+            <h5>
+                Click Button To Get Random Meal & Recipe Below
+            </h5>
+
+            <button id="getMeal">
+                Click Me!
+            </button>
         </div>
-        <script defer src="https://unpkg.com/axios/dist/axios.min.js"></script>
-        <script defer src="script.js"></script>
+        <div id="meal"></div>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
